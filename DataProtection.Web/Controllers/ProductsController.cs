@@ -26,9 +26,11 @@ namespace DataProtection.Web.Controllers
         {
             var products = await _context.Products.ToListAsync();
 
+            var timeLimitedProtector = _dataProtector.ToTimeLimitedDataProtector();
+
             products.ForEach(x =>
             {
-                x.EncrypedId = _dataProtector.Protect(x.Id.ToString());
+                x.EncrypedId = timeLimitedProtector.Protect(x.Id.ToString(), TimeSpan.FromSeconds(5));
             });
 
             return View(products);
@@ -42,7 +44,9 @@ namespace DataProtection.Web.Controllers
                 return NotFound();
             }
 
-            int decryptedId = int.Parse(_dataProtector.Unprotect(id));
+            var timeLimitedProtector = _dataProtector.ToTimeLimitedDataProtector();
+
+            int decryptedId = int.Parse(timeLimitedProtector.Unprotect(id));
 
             var product = await _context.Products
                 .FirstOrDefaultAsync(m => m.Id == decryptedId);
