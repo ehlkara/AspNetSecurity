@@ -24,19 +24,28 @@ namespace DataProtection.Web.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Products.ToListAsync());
+            var products = await _context.Products.ToListAsync();
+
+            products.ForEach(x =>
+            {
+                x.EncrypedId = _dataProtector.Protect(x.Id.ToString());
+            });
+
+            return View(products);
         }
 
         // GET: Products/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
+            int decryptedId = int.Parse(_dataProtector.Unprotect(id));
+
             var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == decryptedId);
             if (product == null)
             {
                 return NotFound();
