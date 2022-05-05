@@ -5,10 +5,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using WhiteBlackList.Web.Filters;
 using WhiteBlackList.Web.Models;
 
 namespace WhiteBlackList.Web.Controllers
 {
+
+    [ServiceFilter(typeof(CheckWhiteList))]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

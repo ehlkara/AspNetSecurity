@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WhiteBlackList.Web.Filters;
 using WhiteBlackList.Web.Middlewares;
 
 namespace WhiteBlackList.Web
@@ -24,6 +25,8 @@ namespace WhiteBlackList.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<CheckWhiteList>();
+
             services.Configure<IPList>(Configuration.GetSection("IPList"));
 
             services.AddControllersWithViews();
@@ -43,7 +46,7 @@ namespace WhiteBlackList.Web
                 app.UseHsts();
             }
 
-
+            //app.UseMiddleware<IPSafeMiddleWare>();
             //--request------[]----[][][][]---------------->response
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -51,8 +54,6 @@ namespace WhiteBlackList.Web
             app.UseRouting();
 
             app.UseAuthorization();
-
-            app.UseMiddleware<IPSafeMiddleWare>();
 
             app.UseEndpoints(endpoints =>
             {
