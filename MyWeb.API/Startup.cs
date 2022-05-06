@@ -48,6 +48,11 @@ namespace MyWeb.API
                 {
                     builder.WithOrigins("https://www.ehlkara2.com").WithHeaders(HeaderNames.ContentType, "x-custom-header");
                 });
+
+                options.AddPolicy("AllowSites3", builder =>
+                {
+                    builder.WithOrigins("https://localhost:44394").WithMethods("POST", "GET").AllowAnyHeader();
+                });
             });
 
             services.AddControllers();
@@ -71,7 +76,8 @@ namespace MyWeb.API
 
             app.UseRouting();
 
-            app.UseCors("AllowSites");
+            //app.UseCors("AllowSites");
+            app.UseCors();
 
             app.UseAuthorization();
 
