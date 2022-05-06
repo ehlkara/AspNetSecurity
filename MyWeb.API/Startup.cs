@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
@@ -29,9 +30,23 @@ namespace MyWeb.API
 
             services.AddCors(options =>
             {
-                options.AddDefaultPolicy(builder =>
+                //// DefaultPolicy
+                //options.AddDefaultPolicy(builder =>
+                //{
+                //    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                //});
+
+                //Custom Cors Policy Rules
+                options.AddPolicy("AllowSites", builder =>
                 {
-                    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                    //builder.WithOrigins("https://localhost:44394", "https://www.ehlkara.com").AllowAnyHeader().AllowAnyMethod();
+                    //Accept any sub domain configuration
+                    builder.WithOrigins("https://*.example.com").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader().AllowAnyMethod();
+                });
+
+                options.AddPolicy("AllowSites2", builder =>
+                {
+                    builder.WithOrigins("https://www.ehlkara2.com").WithHeaders(HeaderNames.ContentType, "x-custom-header");
                 });
             });
 
@@ -56,7 +71,7 @@ namespace MyWeb.API
 
             app.UseRouting();
 
-            app.UseCors();
+            app.UseCors("AllowSites");
 
             app.UseAuthorization();
 
